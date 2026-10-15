@@ -11,3 +11,33 @@ Insomnia template syntax where environment variables are accessed via the `_.` p
 
 ### Environment Inheritance
 Mechanism where sub-environments (`Dev`, `Prod`, `Local`) inherit values from a parent Base Environment and selectively override keys. ApiArk environments are standalone files, so inheritance is resolved into merged variable sets.
+
+### Load Test
+A timed run that sends concurrent traffic to an API to measure how it behaves under load. The umbrella term for the feature; "stress test" and "spike test" are load profiles within it, not separate features. Distinct from a Collection Run, which is a sequential functional check.
+
+### Virtual User (VU)
+One simulated client in a Load Test. Each VU executes the Scenario's requests in order, in a repeating loop, until the test ends. VUs do not share session state with each other.
+
+### Scenario
+The set of requests a Virtual User loops through during a Load Test. Either a single request, a folder, or a whole collection, run in order. A single request is a Scenario of one.
+
+### Load Profile
+The shape of Virtual User count over time in a Load Test. **Fixed** holds a constant number of VUs. **Ramp Up** increases VUs gradually to a target. Spike and Peak profiles are not yet defined.
+
+### Iteration
+One complete pass of a Virtual User through every request in the Scenario. Load Test metrics are reported per request, and also rolled up per Iteration (iterations per second, Iteration duration).
+
+### Failure Criteria
+The rules that decide whether a single request in a Load Test counts as a failure. Configurable per Load Test. Default: a transport error, a timeout, a response status outside the accepted success range (default 200-399, unless the request's own assertion expects it), or a failed declarative assertion. Applies to the whole Load Test. Distinct from a Threshold, which judges the whole run.
+
+### Think Time
+A fixed pause a Virtual User takes between requests. Defaults to none, so the Load Test is closed-loop: a VU sends its next request only after the previous response. It does not hold a target arrival rate regardless of latency.
+
+### Threshold
+A run-level pass/fail rule applied to a finished Load Test, such as a maximum p95 latency, a maximum error rate, or a minimum requests per second. Optional. When any Threshold is set, the run gets an overall PASS or FAIL verdict. Distinct from Failure Criteria, which judges individual requests.
+
+### Request Timeout
+The longest a Virtual User waits for a single response in a Load Test. A request that exceeds it counts as a failure in its own "timeout" category, and the Virtual User moves on.
+
+### Run Snapshot
+The record of what a Load Test actually tested, saved with its results: the configuration, the list of requests with their variables left unresolved, the environment name, and basic machine details. It never contains resolved variable values, credentials or headers.
